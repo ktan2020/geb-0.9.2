@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="module/geb-core/src/main/groovy/|module/geb-testng/src/test/groovy/|module/geb-junit4/src/test/groovy/|module/geb-ast/src/main/groovy/|internal/test-support/src/main/groovy/|module/geb-junit4/src/main/groovy/|doc/site/|integration/geb-grails/grails-app/conf/|module/geb-junit3/src/test/groovy/|doc/site/src/main/webapp/WEB-INF/|integration/geb-grails/scripts/|module/geb-spock/src/test/groovy/|integration/geb-gradle/src/main/groovy/|buildSrc/|module/geb-testng/src/main/groovy/|doc/site/src/main/webapp/WEB-INF/groovy/|module/geb-waiting/src/test/groovy/|module/geb-waiting/src/main/groovy/|module/geb-implicit-assertions/src/main/groovy/|module/geb-core/src/main/java/|module/geb-spock/src/main/groovy/|internal/test-support/src/main/resources/|integration/geb-grails/grails-app/controllers/|module/geb-implicit-assertions/src/test/groovy/|module/|module/geb-junit3/src/main/groovy/|module/geb-easyb/src/main/groovy/|module/geb-core/src/test/groovy/|gradle/|integration/geb-grails/test/functional/|doc/manual/" kind="src" path=""/>
+	<classpathentry kind="src" path="buildSrc"/>
+	<classpathentry kind="src" path="doc/manual"/>
+	<classpathentry excluding="src/main/webapp/WEB-INF/|src/main/webapp/WEB-INF/groovy/" kind="src" path="doc/site"/>
+	<classpathentry excluding="groovy/" kind="src" path="doc/site/src/main/webapp/WEB-INF"/>
+	<classpathentry kind="src" path="doc/site/src/main/webapp/WEB-INF/groovy"/>
+	<classpathentry kind="src" path="gradle"/>
+	<classpathentry kind="src" path="integration/geb-gradle/src/main/groovy"/>
+	<classpathentry kind="src" path="integration/geb-grails/grails-app/conf"/>
+	<classpathentry kind="src" path="integration/geb-grails/grails-app/controllers"/>
+	<classpathentry kind="src" path="integration/geb-grails/scripts"/>
+	<classpathentry kind="src" path="integration/geb-grails/test/functional"/>
+	<classpathentry kind="src" path="internal/test-support/src/main/groovy"/>
+	<classpathentry kind="src" path="internal/test-support/src/main/resources"/>
+	<classpathentry excluding="geb-core/src/main/groovy/|geb-testng/src/test/groovy/|geb-junit4/src/test/groovy/|geb-ast/src/main/groovy/|geb-junit4/src/main/groovy/|geb-junit3/src/test/groovy/|geb-spock/src/test/groovy/|geb-testng/src/main/groovy/|geb-waiting/src/test/groovy/|geb-waiting/src/main/groovy/|geb-implicit-assertions/src/main/groovy/|geb-core/src/main/java/|geb-spock/src/main/groovy/|geb-implicit-assertions/src/test/groovy/|geb-junit3/src/main/groovy/|geb-easyb/src/main/groovy/|geb-core/src/test/groovy/" kind="src" path="module"/>
+	<classpathentry kind="src" path="module/geb-ast/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-core/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-core/src/main/java"/>
+	<classpathentry kind="src" path="module/geb-core/src/test/groovy"/>
+	<classpathentry kind="src" path="module/geb-easyb/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-implicit-assertions/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-implicit-assertions/src/test/groovy"/>
+	<classpathentry kind="src" path="module/geb-junit3/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-junit3/src/test/groovy"/>
+	<classpathentry kind="src" path="module/geb-junit4/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-junit4/src/test/groovy"/>
+	<classpathentry kind="src" path="module/geb-spock/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-spock/src/test/groovy"/>
+	<classpathentry kind="src" path="module/geb-testng/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-testng/src/test/groovy"/>
+	<classpathentry kind="src" path="module/geb-waiting/src/main/groovy"/>
+	<classpathentry kind="src" path="module/geb-waiting/src/test/groovy"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

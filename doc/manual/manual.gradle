@@ -1,0 +1,105 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.gebish:markdown2book:1.0"
+	}
+}
+
+archivesBaseName = "geb-manual"
+
+modifyPom { pom ->
+	pom.project {
+		name "Geb Manual - The Book of Geb"
+		description "Geb (pronounced \"jeb\") manual, user guide and API reference."
+	}
+}
+
+task tokeniseManual(type: Copy) {
+	from "src"
+	into "$buildDir/manual-tokenised"
+
+	ext.substitutionProperties = [
+		"geb-version": project.version,
+		"geb-group": project.group,
+		"spock-version": "0.7",
+		"spock-core-version": "0.7-groovy-1.8",
+		"selenium-version": seleniumVersion,
+		"groovy-version": groovyVersion,
+		"created-at": new java.text.SimpleDateFormat("MMMM, yyyy").format(new Date()),
+		"home-page": "www.gebish.org",
+		"manual-url": "https://oss.sonatype.org/content/repositories/${isSnapshot ? 'snapshots' : 'releases'}/org/gebish/geb-manual/$version/geb-manual-${version}.zip".toString()
+	]
+
+	inputs.properties(substitutionProperties)
+
+	def tokenisableExtensions = ["md", "html"]
+	inputs.property("tokenisableExtensions", tokenisableExtensions)
+
+	eachFile { file ->
+		if (tokenisableExtensions.any { file.name.endsWith(it) }) {
+			file.filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: substitutionProperties)
+		}
+	}
+}
+
+configurations {
+	groovydoc
+}
+
+dependencies {
+	groovydoc groovyDependency
+}
+
+task apiDoc(type: Groovydoc) {
+	groovyClasspath = configurations.groovydoc
+	classpath = files()
+	destinationDir = file("$buildDir/apiDoc")
+	apiGroovyModules.collect { project(it) }.each {
+		source it.sourceSets.main.groovy, it.sourceSets.main.java
+		classpath += it.sourceSets.main.compileClasspath + it.sourceSets.main.output
+	}
+}
+
+task compileManual {
+	dependsOn tokeniseManual
+
+	ext.source = tokeniseManual.destinationDir
+	inputs.dir(source)
+
+	ext.destination = file("$buildDir/manual-compiled")
+	outputs.dir(destination)
+
+	ext.encoding = "UTF-8"
+	inputs.property("encoding", encoding)
+
+	doLast {
+		new markdown2book.Generator(source, destination, encoding).generate()
+	}
+}
+
+task packageManual(type: Sync) {
+	into "$buildDir/manual"
+	from compileManual
+	
+	into ("api") {
+		from apiDoc
+	}
+}
+
+task openManual() {
+	doLast {
+		new java.awt.Desktop().browse(file("$packageManual.destinationDir/index.html").toURI())
+	}
+}
+
+task manualZip(type: Zip) {
+	from packageManual
+}
+
+artifacts {
+	archives manualZip
+}
+
+task build(dependsOn: manualZip)

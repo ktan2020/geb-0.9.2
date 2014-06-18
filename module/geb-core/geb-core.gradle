@@ -1,0 +1,59 @@
+import geb.gradle.saucelabs.SauceAccount
+
+apply plugin: "geb-saucelabs"
+
+repositories {
+	maven { url "http://repository-saucelabs.forge.cloudbees.com/release" }
+}
+
+dependencies {
+	compile seleniumDependency, seleniumSupportDependency
+	
+	compile project(":module:geb-ast")
+	compile project(":module:geb-waiting")
+
+	sauceConnect "com.saucelabs:sauce-connect:3.0.28"
+}
+
+test {
+	maxParallelForks 2
+	if (driver == "htmlunit") {
+		exclude "**/ExoticAttributeValuesSpec.class"
+	}
+}
+
+task allCrossBrowserTests {
+	dependsOn 'allSauceTests'
+}
+
+sauceLabs {
+	browsers {
+		firefox_linux_19
+		firefox_windows_19
+		firefox_mac_19
+		chrome_linux
+		chrome_windows
+		chrome_mac
+		internetExplorer_vista_8
+		internetExplorer_vista_9
+	}
+	task {
+		testClassesDir = test.testClassesDir
+		testSrcDirs = test.testSrcDirs
+		classpath = test.classpath
+		maxParallelForks 3
+	}
+	account {
+		username = System.getenv(SauceAccount.USER_ENV_VAR)
+		accessKey = System.getenv(SauceAccount.ACCESS_KEY_ENV_VAR)
+	}
+}
+
+modifyPom { pom ->
+	pom.project {
+		name "Geb Core"
+		description "Geb (pronounced \"jeb\") is a browser automation solution. It brings together the power of WebDriver, the elegance of jQuery content selection, the robustness of Page Object modelling and the expressiveness of the Groovy language."
+	}
+	
+	pom.dependencies.findAll { it.groupId == "org.seleniumhq.selenium" }*.scope = "provided"
+}

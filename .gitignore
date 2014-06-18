@@ -1,0 +1,13 @@
+target
+*.tmproj
+.DS_Store
+build
+.gradle
+*.iws
+build.sh
+*.log
+*.iml
+.idea
+out
+*.ipr
+*.hprof

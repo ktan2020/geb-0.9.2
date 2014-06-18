@@ -1,0 +1,146 @@
+import org.grails.gradle.plugin.GrailsTask
+
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url 'http://repo.grails.org/grails/repo' }
+	}
+	dependencies {
+		classpath "org.grails:grails-gradle-plugin:2.0.0-SNAPSHOT"
+	}
+}
+
+apply plugin: "grails"
+
+grails {
+	grailsVersion "2.1.1"
+}
+
+configurations {
+	all {
+		exclude module: "commons-logging"
+		exclude module: 'xml-apis'
+	}
+	test {
+		exclude module: "groovy-all"
+	}
+	releaseBootstrap.extendsFrom bootstrap
+}
+
+repositories {
+	maven { url 'http://repo.grails.org/grails/repo' }
+}
+
+dependencies {
+	["plugin-tomcat", "plugin-datasource", "plugin-services", "hibernate"].each { module ->
+		compile "org.grails:grails-$module:$grails.grailsVersion"
+	}
+	
+	bootstrap "org.codehaus.groovy:groovy-all:1.8.6"
+	
+	test project(':module:geb-junit4')
+	test htmlUnitDriverDependency
+	test project(':module:geb-spock'), {
+		exclude module: "spock-core"
+		exclude module: "groovy-all"
+	}
+	
+	test "org.grails.plugins:spock:0.7"
+	test "org.spockframework:spock-grails-support:0.7-groovy-1.8"
+	test "org.grails:grails-test:$grails.grailsVersion"
+
+	[hibernate: grails.grailsVersion, tomcat: grails.grailsVersion, release: "2.0.4"].collect { name, version ->
+		bootstrap "org.grails.plugins:$name:$version"
+	}
+	
+	releaseBootstrap "org.codehaus.groovy.modules.http-builder:http-builder:0.5.0", {
+		exclude module: "xml-apis"
+		exclude module: "groovy"
+		exclude module: "httpclient"
+		exclude module: "nekohtml"
+		exclude module: "httpcore"
+		exclude module: "groovy"
+	}
+}
+
+
+def findTemplatedFiles = {
+	def files = [:]
+	projectDir.eachFileRecurse { inputFile ->
+		if (!inputFile.name.endsWith(".in")) return
+		files[inputFile] = new File(inputFile.parentFile, inputFile.name[0..-4])
+	}
+	files
+}
+
+task createTemplatedFiles << {
+	def templateVariables = [
+		"grails-version": grails.grailsVersion,
+		"geb-version": project.version
+	]
+	
+	findTemplatedFiles().each { inputFile, outputFile ->
+		def input = inputFile.getText("UTF-8")
+		templateVariables.each { k, v ->
+			input = input.replace("@$k@", v)
+		}
+		outputFile.setText(input, "UTF-8")
+	}
+}
+
+tasks.withType(GrailsTask) { task ->
+	if (task.name != "clean") task.dependsOn(createTemplatedFiles)
+	jvmOptions {
+		systemProperty "server.port", "8010"
+	}
+}
+
+task clean(type: Delete, overwrite: true) { task ->
+	delete buildDir
+	delete "target"
+	delete "plugin.xml"
+	
+	projectDir.eachFile {
+		if (it.name.endsWith(".zip")) {
+			task.delete(it)
+		}
+	}
+
+	findTemplatedFiles().each { inputFile, outputFile ->
+		task.delete(outputFile)
+	}
+	
+	projectDir.eachDirRecurse {
+		if (it.exists() && it.list().size() == 0) {
+			task.delete(it)
+		}
+	}
+}
+
+task packagePlugin(type: GrailsTask) {
+	command "package-plugin"
+}
+
+task dumpClassloaders(type: GrailsTask) {
+	command "dump-classloaders"
+}
+
+task test(type: GrailsTask) {
+	dependsOn packagePlugin
+	command "test-app"
+}
+
+task publish(type: GrailsTask, dependsOn: packagePlugin) {
+	bootstrapClasspath = configurations.releaseBootstrap
+	command "publish-plugin"
+
+	args "--non-interactive --noScm --repository=grailsCentral --portal=grailsCentral"
+	if (isSnapshot) args += " --snapshot"
+
+	jvmOptions {
+		systemProperty "geb.releasing", "true"
+	}
+}
+
+task check(dependsOn: test)
+task build(dependsOn: [check, assemble])
